@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SemanticCache.Api/SemanticCache.Api.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/SemanticCache.RedisTests/SemanticCache.RedisTests.csproj" />
+    <Project Path="tests/SemanticCache.Tests/SemanticCache.Tests.csproj" />
+  </Folder>
+</Solution>

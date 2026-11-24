@@ -1,0 +1,52 @@
+@host = http://localhost:5186
+
+### 1. First time: the model answers, and the answer is stored
+POST {{host}}/api/chat
+Content-Type: application/json
+
+{ "message": "How many rows can I export?", "tenantId": "acme" }
+
+### 2. Same text: exact hit, no model call and no embedding
+POST {{host}}/api/chat
+Content-Type: application/json
+
+{ "message": "How many rows can I export?", "tenantId": "acme" }
+
+### 3. Different words, same question: semantic hit
+POST {{host}}/api/chat
+Content-Type: application/json
+
+{ "message": "What is the maximum number of rows in an export?", "tenantId": "acme" }
+
+### 4. Near miss: almost the same distance, and the yes/no check rejects it
+POST {{host}}/api/chat
+Content-Type: application/json
+
+{ "message": "How many columns can I export?", "tenantId": "acme" }
+
+### 5. Same near miss with the check off: the wrong answer comes back
+POST {{host}}/api/chat
+Content-Type: application/json
+
+{ "message": "How many columns can I export?", "tenantId": "acme", "verify": false }
+
+### 6. Another tenant never sees Acme's answer
+POST {{host}}/api/chat
+Content-Type: application/json
+
+{ "message": "How many rows can I export?", "tenantId": "globex" }
+
+### 7. Live data is never stored
+POST {{host}}/api/chat
+Content-Type: application/json
+
+{ "message": "Has my export finished?", "tenantId": "acme" }
+
+### 8. Changing a limit raises the revision, so old answers stop matching
+POST {{host}}/api/tenants/acme/policy
+Content-Type: application/json
+
+{ "exportLimit": 20000 }
+
+### 9. What is in the cache
+GET {{host}}/api/cache?tenantId=acme

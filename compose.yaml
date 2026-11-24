@@ -1,0 +1,40 @@
+name: redis-semantic-caching
+services:
+  redis:
+    image: redis:8.2.3
+    ports: ["127.0.0.1:6396:6379"]
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes: ["redis-data:/data"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 2s
+      retries: 20
+
+  ollama:
+    image: ollama/ollama:0.35.1
+    ports: ["127.0.0.1:11436:11434"]
+    volumes: ["ollama-data:/root/.ollama"]
+    environment:
+      OLLAMA_KEEP_ALIVE: "30m"
+      OLLAMA_NUM_PARALLEL: "1"
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+
+  # Downloads both models once, then exits.
+  models:
+    image: ollama/ollama:0.35.1
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      OLLAMA_HOST: "http://ollama:11434"
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["ollama pull qwen3:4b-instruct-2507-q4_K_M && ollama pull nomic-embed-text:v1.5"]
+
+volumes:
+  redis-data:
+  ollama-data:

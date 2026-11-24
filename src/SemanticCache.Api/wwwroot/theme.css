@@ -1,0 +1,255 @@
+:root {
+  color-scheme: light;
+}
+.theme-sun {
+  display: none;
+}
+[data-theme="dark"] .theme-sun {
+  display: block;
+}
+[data-theme="dark"] .theme-moon {
+  display: none;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  color: #e2e8f0;
+  background: #0b1020;
+  --indigo: #93c5fd;
+  --muted: #9cabc1;
+  --line: #2b3a50;
+  --green: #6ee7b7;
+  --shadow: 0 6px 28px #0000001a;
+  --surface: #131b2b;
+  --elevated: #192437;
+  --input: #0e1625;
+  --text: #e2e8f0;
+  --secondary: #bac7db;
+}
+
+[data-theme="dark"] :is(.site-header, .settings, .panel, dialog, .trace-event) {
+  background: var(--surface);
+  color: var(--text);
+}
+[data-theme="dark"] :is(.brand, .session-strip strong, .work-metrics strong, .cache-entry h3) {
+  color: var(--text);
+}
+[data-theme="dark"]
+  :is(.button, .button.subtle, .prompt-shortcuts button, .example-prompts button) {
+  background: var(--elevated);
+  border-color: var(--line);
+  color: var(--text);
+  box-shadow: none;
+}
+[data-theme="dark"] :is(.button.primary) {
+  background: #2563eb;
+  color: #fff;
+  border-color: #3b82f6;
+}
+[data-theme="dark"] .button.primary:hover {
+  background: #1d4ed8;
+}
+[data-theme="dark"]
+  :is(.icon-button:hover, .example-prompts button:hover, .prompt-shortcuts button:hover) {
+  background: #24334a;
+  color: var(--text);
+}
+[data-theme="dark"] .button.danger {
+  background: #331f29;
+  color: #fda4af;
+  border-color: #63313c;
+}
+[data-theme="dark"] .status-chip.ready {
+  background: #102c26;
+  border-color: #245443;
+}
+[data-theme="dark"] .status-chip.error {
+  background: #331f29;
+  color: #fda4af;
+  border-color: #63313c;
+}
+[data-theme="dark"]
+  :is(.segmented, .composer, .request-summary, .work-metrics, .policy-current, .message-question) {
+  background: var(--elevated);
+}
+[data-theme="dark"] .segmented button {
+  color: var(--muted);
+}
+[data-theme="dark"] .segmented button.active {
+  background: #254266;
+  color: #bfdbfe;
+  box-shadow: none;
+}
+[data-theme="dark"]
+  :is(.setting select, .threshold-input input, .request-toolbar select, .policy-label input) {
+  background: var(--input);
+  border-color: var(--line);
+  color: var(--text);
+}
+[data-theme="dark"] .composer textarea {
+  color: var(--text);
+}
+[data-theme="dark"] .composer textarea::placeholder {
+  color: var(--muted);
+}
+[data-theme="dark"] .composer:focus-within {
+  box-shadow: inset 0 0 0 2px #3b82f6;
+}
+[data-theme="dark"]
+  :is(
+    .field-label,
+    .scope-summary,
+    .answer-revision,
+    .answer-content,
+    .message-question,
+    .event-operation,
+    .summary-duration,
+    .answer-stats b,
+    .summary-metrics b,
+    .answer-note strong,
+    .trace-empty h3,
+    .policy-label,
+    .cache-entry pre,
+    .comparison-answers summary,
+    .match-decision span,
+    #comparison-progress,
+    #reset-result
+  ) {
+  color: var(--secondary);
+}
+[data-theme="dark"]
+  :is(
+    .help-tip,
+    .threshold-input span,
+    .session-label,
+    .session-strip span,
+    .panel-heading p,
+    .stream-state,
+    .chat-empty p,
+    .trace-empty p,
+    .example-prompts button span:last-child,
+    .composer-bottom span,
+    .text-button,
+    .trace-filters button,
+    .inspector-footer,
+    .page-footer,
+    .message-context,
+    .answer-stats,
+    .answer-note,
+    .pending-line,
+    .event-meta,
+    .event-status,
+    .event-duration,
+    .event-chevron,
+    .summary-metrics,
+    .summary-reason,
+    .session-empty,
+    .dialog-description,
+    .cache-entry-meta,
+    .work-metrics span,
+    .comparison-answers small,
+    .comparison-note
+  ) {
+  color: var(--muted);
+}
+[data-theme="dark"] :is(.text-button.active, .demo-actions .text-button, .cache-entry summary) {
+  color: var(--indigo);
+}
+[data-theme="dark"] :is(.trace-filters button.active, .empty-art) {
+  background: #1c3555;
+  border-color: #385b88;
+  color: #93c5fd;
+}
+[data-theme="dark"] .empty-art circle {
+  fill: #1c3555;
+}
+[data-theme="dark"] .trace-empty svg {
+  color: #7385a3;
+}
+[data-theme="dark"] :is(.inspector-footer, .dialog-footer, .event-body, .answer-note) {
+  background: var(--input);
+  border-color: var(--line);
+}
+[data-theme="dark"] :is(.trace-event, .policy-current) {
+  border-color: var(--line);
+}
+[data-theme="dark"] .event-body pre {
+  color: var(--secondary);
+}
+[data-theme="dark"]
+  :is(.source-badge.model, .source-badge.pending, .event-category, .event-category.redis) {
+  background: #29364b;
+  color: #cbd5e1;
+}
+[data-theme="dark"] :is(.source-badge.exact, .source-badge.semantic, .source-badge.playbook, .event-category.cache) {
+  background: #12392e;
+  color: #6ee7b7;
+}
+[data-theme="dark"] :is(.source-badge.bypass, .notice) {
+  background: #352b19;
+  color: #f5cd83;
+  border-color: #66532d;
+}
+[data-theme="dark"] :is(.source-badge.error, .trace-event.status-error) {
+  background: #331f29;
+  color: #fda4af;
+  border-color: #63313c;
+}
+[data-theme="dark"] .event-category.model {
+  background: #1c3555;
+  color: #93c5fd;
+}
+[data-theme="dark"] :is(.event-category.tool, .event-category.provider) {
+  background: #173345;
+  color: #7dd3fc;
+}
+[data-theme="dark"] .event-category.embedding {
+  background: #123b3b;
+  color: #5eead4;
+}
+[data-theme="dark"] :is(.stream-state.connected, .event-status.completed, .match-decision) {
+  color: var(--green);
+}
+[data-theme="dark"] :is(.event-status.error, .inline-error, .comparison-table small) {
+  color: #fda4af;
+}
+[data-theme="dark"] .stream-state.error {
+  color: #f5cd83;
+}
+[data-theme="dark"] .event-status.started {
+  color: var(--secondary);
+}
+[data-theme="dark"] .spinner {
+  border-color: #334765;
+  border-top-color: var(--indigo);
+}
+[data-theme="dark"] .policy-current {
+  color: #bfdbfe;
+}
+[data-theme="dark"] .comparison-table thead {
+  background: var(--elevated);
+  color: var(--secondary);
+}
+[data-theme="dark"] dialog::backdrop {
+  background: #030712b3;
+}
+[data-theme="dark"] .toast {
+  background: #dbeafe;
+  color: #172b46;
+}
+[data-theme="dark"] .toast.error {
+  background: #7f283a;
+  color: #fff;
+}
+
+@media (max-width: 600px) {
+  .site-header {
+    gap: 8px;
+  }
+  .header-tools {
+    gap: 4px;
+  }
+  .header-tools .icon-button {
+    flex-shrink: 0;
+  }
+}

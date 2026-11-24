@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Support assistant · Semantic caching</title>
+    <link rel="icon" type="image/svg+xml" href="/cache.svg" />
+    <script src="/theme.js"></script>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/theme.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Semantic caching home"
+        ><span>Semantic caching</span><span class="project-label">.NET 11 demo</span></a
+      >
+      <h1 class="sr-only">Support assistant</h1>
+      <div class="header-actions main-only">
+        <button class="button subtle" id="open-cache">
+          <svg viewBox="0 0 24 24">
+            <ellipse cx="12" cy="5" rx="8" ry="3" />
+            <path d="M4 5v7c0 4 16 4 16 0V5M4 12v7c0 4 16 4 16 0" /></svg
+          >Cache entries</button
+        ><button class="button subtle" id="open-policy">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 3 3 7v6c0 5 9 9 9 9s9-4 9-9V7zM8 12l3 3 5-6" /></svg
+          >Tenant policy
+        </button>
+      </div>
+      <div class="header-tools">
+        <span id="service-state" class="status-chip neutral"><i></i>Checking services</span>
+        <button
+          id="theme-toggle"
+          class="icon-button"
+          title="Switch to dark mode"
+          aria-label="Switch to dark mode"
+          type="button"
+        >
+          <svg class="theme-moon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.5 13A8.5 8.5 0 0 1 11 3.5 8.5 8.5 0 1 0 20.5 13Z" />
+          </svg>
+          <svg class="theme-sun" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4" />
+            <path
+              d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"
+            />
+          </svg>
+        </button>
+        <button
+          id="refresh-status"
+          class="icon-button"
+          title="Refresh service status"
+          aria-label="Refresh service status"
+        >
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M20 7v5h-5M4 17v-5h5M6.1 7a7 7 0 0 1 11.5-1L20 9M4 15l2.4 3A7 7 0 0 0 17.9 17"
+            />
+          </svg>
+        </button>
+      </div>
+    </header>
+    <main class="workspace">
+      <div id="service-notice" class="notice" hidden></div>
+      <section class="settings main-only" aria-label="Request settings">
+        <div class="setting mode-setting">
+          <span class="field-label">Cache mode</span>
+          <div class="segmented" role="group" aria-label="Cache mode">
+            <button data-mode="off" class="active" aria-pressed="true">Off</button
+            ><button data-mode="exact" aria-pressed="false">Exact</button
+            ><button data-mode="semantic" aria-pressed="false">Semantic</button>
+          </div>
+        </div>
+        <label class="setting"
+          ><span class="field-label">Tenant</span
+          ><select id="tenant-select">
+            <option value="acme">Acme</option>
+            <option value="globex">Globex</option>
+          </select></label
+        >
+        <label class="setting threshold-setting"
+          ><span class="field-label"
+            >Max distance
+            <span
+              class="help-tip"
+              title="Maximum distance accepted for a semantic match. Lower values are stricter; this is not a probability."
+              >ⓘ</span
+            ></span
+          >
+          <div class="threshold-input">
+            <input
+              id="threshold"
+              type="number"
+              min="0"
+              max="0.3"
+              step="0.01"
+              value="0.25"
+              inputmode="decimal"
+              aria-describedby="threshold-help"
+            /><span id="threshold-help">Lower is stricter</span>
+          </div></label
+        >
+        <div class="setting">
+          <span class="field-label">Reuse rules</span>
+          <div class="toggles">
+            <label><input type="checkbox" id="verify" checked /> Check match</label
+            ><label><input type="checkbox" id="playbooks" disabled /> Agent Playbooks</label>
+          </div>
+        </div>
+      </section>
+      <div class="demo-toolbar main-only">
+        <div class="prompt-shortcuts" aria-label="Demo questions">
+          <span>Ask</span><button data-prompt="How many rows can I export?">Export limit</button
+          ><button data-prompt="What is the maximum number of rows in an export?">Paraphrase</button
+          ><button data-prompt="How many columns can I export?">Near miss</button
+          ><button data-prompt="Has my export finished?">Live data</button
+          ><button data-prompt="How do I rotate an API key?">API key</button>
+        </div>
+        <div class="demo-actions">
+          <button id="open-comparison" class="text-button">Compare modes</button
+          ><button id="run-workload" class="text-button">Run sample requests</button
+          ><button id="open-reset" class="text-button">Reset demo</button>
+        </div>
+      </div>
+      <section class="session-strip main-only" aria-label="Completed request results">
+        <div id="scope-summary" class="scope-summary"></div>
+        <span class="session-label">SESSION TOTALS</span>
+        <div><strong id="stat-requests">0</strong><span>completed</span></div>
+        <div><strong id="stat-hits">0</strong><span>cache hits</span></div>
+        <div
+          title="Chat inference requests; embeddings and provider metadata checks are counted separately."
+        >
+          <strong id="stat-models">0</strong><span>chat calls</span>
+        </div>
+        <div><strong id="stat-embeddings">0</strong><span>embeddings</span></div>
+        <div><strong id="stat-checks">0</strong><span>checks</span></div>
+        <div><strong id="stat-input">0</strong><span>input tokens</span></div>
+        <div><strong id="stat-tokens">0</strong><span>output tokens</span></div>
+      </section>
+      <div class="panels">
+        <section class="panel chat-panel main-only" aria-label="Questions and answers">
+          <div class="panel-heading">
+            <div>
+              <h2>Questions & answers</h2>
+              <p>Each question is a new request. No chat history is sent.</p>
+            </div>
+            <span class="live-dot" id="request-progress" hidden>Working</span>
+          </div>
+          <div id="messages" class="messages" role="log" aria-label="Answers" aria-live="polite">
+            <div class="chat-empty" id="chat-empty">
+              <div class="empty-art">
+                <svg viewBox="0 0 64 64">
+                  <rect x="8" y="10" width="41" height="31" rx="8" />
+                  <path d="m18 41-6 9v-10M18 21h20M18 29h13M43 45h9M48 40v10" />
+                  <circle cx="48" cy="45" r="13" />
+                </svg>
+              </div>
+              <h3>Ask about a tenant policy</h3>
+              <p>
+                Choose a sample question or type your own.<br />Answers use the selected tenant's
+                current policy.
+              </p>
+              <div class="example-prompts">
+                <button data-prompt="How many rows can I export?">
+                  <span>Export limits</span><span>↗</span></button
+                ><button data-prompt="What is the log retention period?">
+                  <span>Log retention</span><span>↗</span></button
+                ><button data-prompt="How do I rotate an API key?">
+                  <span>API key rotation</span><span>↗</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <form id="chat-form" class="composer">
+            <label class="sr-only" for="message-input">Question</label
+            ><textarea
+              id="message-input"
+              rows="2"
+              maxlength="2000"
+              placeholder="Ask a question…"
+              required
+            ></textarea>
+            <div class="composer-bottom">
+              <span
+                >Enter to send <span class="composer-divider">·</span> Shift + Enter for a new
+                line</span
+              ><button class="button primary" id="send-button" type="submit" disabled>
+                Send question <svg viewBox="0 0 24 24"><path d="M12 19V5m-6 6 6-6 6 6" /></svg>
+              </button>
+            </div>
+          </form>
+        </section>
+        <section class="panel inspector-panel" aria-label="Live request inspector">
+          <div class="panel-heading">
+            <div>
+              <div class="inspector-title">
+                <h2>Request inspector</h2>
+                <span id="stream-state" class="stream-state"><i></i>Connecting</span>
+              </div>
+              <p>Cache lookups, model calls, and tool results for each request.</p>
+            </div>
+            <div class="request-toolbar">
+              <label class="sr-only" for="request-select">Select request</label
+              ><select id="request-select">
+                <option value="">No requests yet</option></select
+              ><button id="follow-latest" class="text-button active" aria-pressed="true">
+                Follow latest
+              </button>
+            </div>
+            <div class="inspector-actions">
+              <button
+                id="reload-history"
+                class="icon-button"
+                title="Reload trace history"
+                aria-label="Reload trace history"
+              >
+                <svg viewBox="0 0 24 24">
+                  <path
+                    d="M20 7v5h-5M4 17v-5h5M6.1 7a7 7 0 0 1 11.5-1L20 9M4 15l2.4 3A7 7 0 0 0 17.9 17"
+                  />
+                </svg></button
+              ><button
+                id="popout-inspector"
+                class="icon-button main-only"
+                title="Open inspector in a separate window"
+                aria-label="Open inspector in a separate window"
+              >
+                <svg viewBox="0 0 24 24"><path d="M14 3h7v7m0-7-10 10M10 5H4v15h15v-6" /></svg>
+              </button>
+            </div>
+          </div>
+          <div id="request-summary" class="request-summary" hidden></div>
+          <div class="trace-filters" role="group" aria-label="Filter trace events">
+            <button class="active" data-filter="steps" aria-pressed="true">Key steps</button
+            ><button data-filter="all" aria-pressed="false">All</button
+            ><button data-filter="redis" aria-pressed="false">Redis</button
+            ><button data-filter="model" aria-pressed="false">Chat</button
+            ><button data-filter="tool" aria-pressed="false">Tools</button
+            ><button data-filter="embedding" aria-pressed="false">Embedding</button
+            ><button data-filter="check" aria-pressed="false">Check</button
+            ><button data-filter="playbook" aria-pressed="false">Playbooks</button
+            ><button data-filter="cache" aria-pressed="false">Cache</button
+            ><button data-filter="provider" aria-pressed="false">Provider</button>
+          </div>
+          <div class="trace-scroll" id="trace-scroll">
+            <div id="trace-events" class="trace-events">
+              <div class="trace-empty">
+                <svg viewBox="0 0 48 48">
+                  <path d="M8 10h32M8 24h32M8 38h32" />
+                  <circle cx="15" cy="10" r="4" />
+                  <circle cx="33" cy="24" r="4" />
+                  <circle cx="22" cy="38" r="4" />
+                </svg>
+                <h3>The trace starts here.</h3>
+                <p>
+                  Send a request to see cache lookups,<br />model calls, tool inputs, and results.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="inspector-footer">
+            <span id="event-count">No events</span
+            ><button id="copy-trace" class="text-button" disabled>Copy trace JSON</button
+            ><span
+              id="session-id"
+              title="Requests and the popout inspector share this session"
+            ></span>
+          </div>
+        </section>
+      </div>
+      <footer class="page-footer">
+        <span id="model-summary">Model details loading…</span
+        ><span>Results come from your local run.</span>
+      </footer>
+    </main>
+    <dialog id="cache-dialog">
+      <div class="dialog-heading">
+        <div>
+          <div class="eyebrow">CACHE ENTRIES</div>
+          <h2>Cached responses</h2>
+        </div>
+        <button class="icon-button close-dialog" aria-label="Close cache entries">×</button>
+      </div>
+      <div class="dialog-description">
+        Entries for <strong id="cache-tenant-name"></strong>. Each entry records the question,
+        answer, policy revision, and expiry.
+      </div>
+      <div id="cache-list" class="cache-list"></div>
+      <div class="dialog-footer">
+        <button id="reset-cache" class="button danger">Clear demo cache</button
+        ><button id="reload-cache" class="button">Refresh entries</button>
+      </div>
+    </dialog>
+    <dialog id="policy-dialog">
+      <form id="policy-form">
+        <div class="dialog-heading">
+          <div>
+            <div class="eyebrow">TENANT POLICY</div>
+            <h2 id="policy-title">Update export limit</h2>
+          </div>
+          <button type="button" class="icon-button close-dialog" aria-label="Close tenant policy">
+            ×
+          </button>
+        </div>
+        <p class="dialog-description">
+          Change the test policy, then ask about export limits again. Inspect the returned policy
+          revision and cache decision.
+        </p>
+        <div id="policy-current" class="policy-current"></div>
+        <label class="policy-label" for="export-limit"
+          >Export limit<input
+            id="export-limit"
+            type="number"
+            min="1"
+            max="1000000"
+            step="1"
+            required
+        /></label>
+        <p id="policy-error" class="inline-error" hidden></p>
+        <div class="dialog-footer">
+          <span id="policy-result" role="status"></span
+          ><button type="submit" id="save-policy" class="button primary">Save policy</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="reset-dialog">
+      <div class="dialog-heading">
+        <h2>Reset demo data</h2>
+        <button class="icon-button close-dialog" aria-label="Close reset demo">×</button>
+      </div>
+      <p class="dialog-description">
+        Clear cached answers for both demo tenants, restore export limits to Acme 10,000 and Globex
+        1,000, and start an empty session with cache mode Off. Policy revision numbers keep
+        increasing.
+      </p>
+      <p class="dialog-description">
+        Local services stay running. An inspector opened from this page follows the new session.
+      </p>
+      <div class="dialog-footer">
+        <span id="reset-result" role="status"></span
+        ><button id="confirm-reset" class="button primary">Reset demo</button>
+      </div>
+    </dialog>
+    <dialog id="comparison-dialog" class="comparison-dialog">
+      <div class="dialog-heading">
+        <div>
+          <div class="eyebrow">FIVE REQUESTS PER MODE</div>
+          <h2>Compare cache modes</h2>
+        </div>
+        <button class="icon-button close-dialog" aria-label="Close comparison">×</button>
+      </div>
+      <p class="dialog-description">
+        Run the original question, its exact repeat, a paraphrase, a near miss, and a retention
+        question in each mode. The last run repeats semantic mode with the check off. This clears
+        cached answers before each mode. Warm-up requests run first and are excluded from the table
+        and session totals.
+      </p>
+      <p class="dialog-description" id="comparison-scope"></p>
+      <div id="comparison-results" class="comparison-results">
+        <p class="comparison-empty">Run the same five questions with each cache mode.</p>
+      </div>
+      <p class="comparison-note">
+        One local run per mode, in Off → Exact → Semantic → Semantic without the check order. HTTP
+        time includes the full request; loading and request order affect timings. Read the returned
+        answers before drawing conclusions.
+      </p>
+      <div class="dialog-footer">
+        <span id="comparison-progress" role="status"></span
+        ><button id="run-comparison" class="button primary">Run comparison</button>
+      </div>
+    </dialog>
+    <div id="toast" class="toast" role="status" hidden></div>
+  </body>
+</html>
