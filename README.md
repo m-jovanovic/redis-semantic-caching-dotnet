@@ -277,7 +277,7 @@ Things worth knowing:
 - The app's key can read and propose. It cannot publish.
 - If Agent Playbooks is down, the request continues with the cache and the model. See `TrySearchAsync` in [AgentPlaybookClient.cs](src/SemanticCache.Api/Features/Playbooks/AgentPlaybookClient.cs).
 - A published FAQ can also be a near miss, so it goes through the same yes/no check.
-- Proposing the same answer twice returns `409`. In my tests, an already accepted proposal that was still in the **Trash** blocked a new one until I deleted it there.
+- Proposing the same answer twice returns `409`. In testing, an already accepted proposal that was still in the **Trash** blocked a new one until I deleted it there.
 
 ## How good is the matching?
 
@@ -296,7 +296,7 @@ Things worth knowing:
 
 Without the check, every limit loose enough to be useful serves wrong answers. With it, the limit can stay loose, because the limit only picks candidates.
 
-The set is small and I wrote it, so treat it as a way to test your own questions. The script uses the app's embedder and check:
+The set is small and written for this demo, so treat it as a way to test your own questions. The script uses the app's embedder and check:
 
 ```bash
 dotnet run evaluation/evaluate.cs
