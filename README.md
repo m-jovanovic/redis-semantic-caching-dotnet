@@ -336,3 +336,7 @@ The unit tests need nothing. The integration tests run against a real Redis and 
 - **Handle a stampede.** Ten identical questions at the same moment all miss and all pay.
 - **Plan for conversation history.** Every message here is an independent question. "And for imports?" means nothing without the previous turn, so its text alone must not be the cache key.
 - **Measure wrong reuse, and not only the hit rate.** A cache that answers everything has a great hit rate.
+
+## License
+
+[MIT](LICENSE). Redis and the Redis logo belong to Redis Ltd.
