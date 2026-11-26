@@ -6,6 +6,8 @@ Users ask the same question in different words, and an LLM app pays for every on
 
 It also publishes the best cached answers to every customer with [Redis Agent Playbooks](https://redis.io/docs/latest/develop/ai/context-engine/agent-playbooks/), after a person approves them.
 
+I walk through the code and the demo in this video: [Semantic Caching in .NET With Redis Vector Search and Agent Playbooks](https://youtu.be/ArSfU9uzWhs).
+
 ![Architecture: exact match, close match, yes/no check, then the model](docs/architecture.png)
 
 The whole flow is four steps, and each one returns an answer or `null`:
